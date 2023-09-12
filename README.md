@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Balance and Transactions API
 
 ## Intro
@@ -188,3 +189,6 @@ In order to do this:
     - open the following link: [http://localhost:3333/api-docs](http://localhost:3333/api-docs)
 
 - This application was developed and validated using [node LTS (v18.17.1)](https://nodejs.org/en/download).
+=======
+
+>>>>>>> 376587a0d646428278795095c8899ee3b46c080d
