@@ -53,7 +53,7 @@ def past_transactions(fromdate,todate,sort=True):
         truth = 0
         if  fromdate <= u['date'] <= todate:
             if u['date'] in [k['date'] for k in dailyBalances]:
-                
+
                 # replace its entry in dailybalances dont create a new one use indexing.
                 for y in processed:
                     if u != y and u['date'] == y['date']:
@@ -71,31 +71,28 @@ def past_transactions(fromdate,todate,sort=True):
     print(f'final array {result}')
     return result
 
-fromdate='2022-01-03'
-todate = '2022-01-05'
-past_transactions(fromdate=fromdate,todate=todate)
+
 ## creating endpoint.
-def trust():
     
-    # task 
-    app = Flask(__name__)
+# task 
+app = Flask(__name__)
 
-    # create and return 
-    @app.route('/historical-balances', methods = ['GET'])
-    def get_transactions():
-        # user logic
-        today = '2022-06-30'
-        frm = request.args.get('date')
-        to = request.args.get('date')
-        sorting = request.args.get('sort')
-        if frm is None or to is None:
-            return jsonify({'error': 'Invalid format for date frm  or to.'}), 400
-        if to < today or frm > to: return jsonify({'error':'Invalid values for frm and to '}), 300
-        if sorting is None: sorting = 'dec'
-        if sorting == 'asc': sort = True 
-        elif sorting == 'desc': sort = False
+# create and return 
+@app.route('/historical-balances', methods = ['GET'])
+def get_transactions():
+    # user logic
+    today = '2022-06-30'
+    frm = request.args.get('date')
+    to = request.args.get('date')
+    sorting = request.args.get('sort')
+    if frm is None or to is None:
+        return jsonify({'error': 'Invalid format for date frm  or to.'}), 400
+    if to < today or frm > to: return jsonify({'error':'Invalid values for frm and to '}), 300
+    if sorting is None: sorting = 'dec'
+    if sorting == 'asc': sort = True 
+    elif sorting == 'desc': sort = False
 
-        return jsonify(past_transactions(frm,to,sort=sort))
+    return jsonify(past_transactions(frm,to,sort=sort))
 
-    if __name__ == 'main':
-        app.run(debug=True)
+if __name__ == 'main':
+    app.run(debug=True)
