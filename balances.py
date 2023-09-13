@@ -7,11 +7,11 @@ def past_transactions(fromdate,todate,sort=True):
     return a sorted list of transactions fromdate to todate with default sorting set to descending order.
     '''
     # adjust the date format
-    day = datetime.strptime(fromdate,'%Y-%m-%d')
-    fromdate = day.strftime('%d/%m/%Y')
-    day = datetime.strptime(todate,'%Y-%m-%d')
-    todate = day.strftime('%d/%m/%Y')
-
+    # day = datetime.strptime(fromdate,'%Y-%m-%d')
+    # fromdate = day.strftime('%d/%m/%Y')
+    # day = datetime.strptime(todate,'%Y-%m-%d')
+    # todate = day.strftime('%d/%m/%Y')
+    
     currentBalances = 'https://uh4goxppjc7stkg24d6fdma4t40wxtly.lambda-url.eu-central-1.on.aws/balances'
     key = 'b4a4552e-1eac-44ac-8fcc-91acca085b98-f94b74ce-aa17-48f5-83e2-8b8c30509c18'
     headers = {
@@ -35,36 +35,45 @@ def past_transactions(fromdate,todate,sort=True):
 
     record = transactions['transactions'] 
     processed = [i for i in record if i['status']=='PROCESSED']
+    today = {'amount': balance['amount'], 'currency': 'EUR','date': '30/06/2022','status': 'PROCESSED'}
+    processed.append(today)
     dailyBalances = []
     # reduce the date length
     for data in processed:
         for key,value in data.items():
             if key == 'date':
                 data[key] = value[:10]
-                day = datetime.strptime(data[key],'%Y-%m-%d')
-                data[key] = day.strftime('%d/%m/%Y')
+                # day = datetime.strptime(data[key],'%Y-%m-%d')
+                # data[key] = day.strftime('%d/%m/%Y')
         
     # calculate daily balances
-    today = {'amount': balance['amount'], 'currency': 'EUR','date': '30/06/2022','status': 'PROCESSED'}
-    processed.append(today)
     truth = 0
     for u in processed:
         new = {'date': '', 'amount': 0, 'currency': 'EUR'}
         truth = 0
-        for k in processed:
-            if u != k and u['date'] == k['date'] and u['date'] not in [k['date'] for k in dailyBalances] and k['date'] >= fromdate and k['date'] <= todate:
-                new['date'] = k['date']
-                new['amount'] = u['amount'] + k['amount'] 
+        if  fromdate <= u['date'] <= todate:
+            if u['date'] in [k['date'] for k in dailyBalances]:
+                
+                # replace its entry in dailybalances dont create a new one use indexing.
+                for y in processed:
+                    if u != y and u['date'] == y['date']:
+                        new['date'] = y['date']
+                        new['amount'] = u['amount'] + y['amount'] 
+                        truth = 1
+            else:
+                new['date'] = u['date']
+                new['amount'] = u['amount']    
                 truth = 1
-        if truth:
-            dailyBalances.append(new)
+                        
+            if truth:
+                dailyBalances.append(new)
     result = sorted(dailyBalances,key=lambda x :x['date'],reverse= sort)
-   
+    print(f'final array {result}')
     return result
 
 fromdate='2022-01-03'
 todate = '2022-01-05'
-print(past_transactions(fromdate=fromdate,todate=todate))
+past_transactions(fromdate=fromdate,todate=todate)
 ## creating endpoint.
 def trust():
     
